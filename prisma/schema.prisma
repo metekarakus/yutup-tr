@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LinkType {
+  SHORTEN
+  YOUTUBE
+  SUBSCRIBE
+}
+
+model User {
+  id                  String   @id @default(cuid())
+  googleSub           String   @unique @map("google_sub")
+  email               String   @unique
+  name                String?
+  image               String?  @map("avatar_url")
+  createdAt           DateTime @default(now()) @map("created_at")
+  customSlugQuotaUsed Int      @default(0) @map("custom_slug_quota_used")
+  links               Link[]
+
+  @@map("users")
+}
+
+model Link {
+  id                  String      @id @default(cuid())
+  ownerUserId         String?     @map("owner_user_id")
+  owner               User?       @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  guestTokenHash      String?     @map("guest_token_hash")
+  creatorIpHash       String?     @map("creator_ip_hash")
+  slug                String      @unique
+  originalUrl         String      @map("original_url")
+  resolvedUrl         String      @map("resolved_url")
+  type                LinkType    @default(SHORTEN) @map("link_type")
+  interstitialEnabled Boolean     @default(false) @map("interstitial_enabled")
+  interstitialMessage String?     @map("interstitial_message")
+  customSlugUsed      Boolean     @default(false) @map("custom_slug_used")
+  isActive            Boolean     @default(true) @map("is_active")
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @updatedAt @map("updated_at")
+  clickEvents         ClickEvent[]
+
+  @@index([ownerUserId])
+  @@map("links")
+}
+
+model ClickEvent {
+  id         String   @id @default(cuid())
+  linkId      String   @map("link_id")
+  link        Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  clickedAt   DateTime @default(now()) @map("clicked_at")
+  country     String?
+  city        String?
+  referrer    String?
+  userAgent   String?  @map("user_agent")
+  ipHash      String?  @map("ip_hash")
+
+  @@index([linkId, clickedAt])
+  @@map("click_events")
+}
