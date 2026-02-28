@@ -66,11 +66,10 @@ export function LandingForm({ isAuthenticated }: { isAuthenticated: boolean }) {
 
 
   return (
-    <section className="card">
-      <h1 className="landing-title">Youtube URL Kısaltıcı</h1>
+    <section className="card landing-builder-card">
       <p className="muted">
-        Yalnızca YouTube bağlantıları için kısa bağlantı üretin. Panelde giriş yaparak abone ol, ara sayfa ve analitik
-        seçeneklerini kullanabilirsiniz.
+        Yalnızca YouTube bağlantıları kabul edilir. Misafir olarak kısaltma yapabilir, giriş sonrası panel özelliklerini
+        açabilirsiniz.
       </p>
 
       {!isAuthenticated ? (
@@ -84,14 +83,14 @@ export function LandingForm({ isAuthenticated }: { isAuthenticated: boolean }) {
           URL Yapıştır
           <input
             type="url"
-            placeholder="https://youtube.com/..."
+            placeholder="Video veya kanal bağlantısını yapıştırın..."
             required
             value={url}
             onChange={(event) => setUrl(event.target.value)}
           />
         </label>
         <button className="btn" disabled={loading} type="submit">
-          {loading ? "Kısaltılıyor..." : "Kısalt"}
+          {loading ? "Kısaltılıyor..." : "Kısalt ve bağlantıyı al"}
         </button>
       </form>
 
